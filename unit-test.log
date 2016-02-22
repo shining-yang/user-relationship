@@ -1,0 +1,99 @@
+pluto@ubuntu:~$ 
+pluto@ubuntu:~$ curl -X POST -d '{"name":"Bob"}' http://localhost:8000/users
+{
+  "id": 7,
+  "name": "Bob",
+  "type": "user"
+}
+pluto@ubuntu:~$ curl -X POST -d '{"name":"Jack"}' http://localhost:8000/users
+{
+  "id": 8,
+  "name": "Jack",
+  "type": "user"
+}
+pluto@ubuntu:~$ curl -X POST -d '{"name":"Rose"}' http://localhost:8000/users
+{
+  "id": 9,
+  "name": "Rose",
+  "type": "user"
+}
+pluto@ubuntu:~$ curl http://localhost:8000/users/6/relationships
+[]
+pluto@ubuntu:~$ curl -X POST -d '{"name":"Bob"}' http://localhost:8000/users
+{
+  "id": 1,
+  "name": "Bob",
+  "type": "user"
+}
+pluto@ubuntu:~$ curl -X POST -d '{"name":"Rose"}' http://localhost:8000/users
+{
+  "id": 2,
+  "name": "Rose",
+  "type": "user"
+}
+pluto@ubuntu:~$ curl -X POST -d '{"name":"Jack"}' http://localhost:8000/users
+{
+  "id": 3,
+  "name": "Jack",
+  "type": "user"
+}
+pluto@ubuntu:~$ curl -i http://localhost:8000/users
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=UTF-8
+Date: Sat, 20 Feb 2016 02:28:53 GMT
+Content-Length: 186
+
+[
+  {
+    "id": 1,
+    "name": "Bob",
+    "type": "user"
+  },
+  {
+    "id": 2,
+    "name": "Rose",
+    "type": "user"
+  },
+  {
+    "id": 3,
+    "name": "Jack",
+    "type": "user"
+  }
+]
+pluto@ubuntu:~$ curl http://localhost:8000/users/1/relationships
+[]
+pluto@ubuntu:~$ curl -X PUT -d '{"state":"liked"}' http://localhost:8000/users/1/relationships/2
+{
+  "id": 2,
+  "state": "liked",
+  "type": "relationship"
+}
+pluto@ubuntu:~$ curl -X PUT -d '{"state":"liked"}' http://localhost:8000/users/3/relationships/2
+{
+  "id": 2,
+  "state": "liked",
+  "type": "relationship"
+}
+pluto@ubuntu:~$ curl -X PUT -d '{"state":"liked"}' http://localhost:8000/users/2/relationships/1
+{
+  "id": 1,
+  "state": "matched",
+  "type": "relationship"
+}
+pluto@ubuntu:~$ curl -X PUT -d '{"state":"disliked"}' http://localhost:8000/users/2/relationships/1
+{
+  "id": 1,
+  "state": "disliked",
+  "type": "relationship"
+}
+pluto@ubuntu:~$ curl http://localhost:8000/users/1/relationships
+[
+  {
+    "id": 2,
+    "state": "liked",
+    "type": "relationship"
+  }
+]
+pluto@ubuntu:~$ 
+pluto@ubuntu:~$ 
+
