@@ -21,7 +21,7 @@ type PostRelationshipData struct {
 
 // Do we support the given URL?
 func urlSupported(url string) bool {
-    routes:= []string{
+    routes := []string{
         `^/users$`,
         `^/users/{user_id:[0-9]+}/relationships$`,
         `^/users/{user_id:[0-9]+}/relationships/{other_user_id:[0-9]+}$`,
@@ -77,6 +77,8 @@ func HandleBlackHoleRoute(w http.ResponseWriter, r *http.Request) {
 
 func RetrieveUsers(w http.ResponseWriter, r *http.Request) {
     db := pgv3.ConnectDatabase()
+    defer db.Close()
+
     users, err := pgv3.GetUsers(db)
     if err != nil {
         responseErrorInternal(w)
@@ -115,6 +117,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
         Type: "user",
     }
     db := pgv3.ConnectDatabase()
+    defer db.Close()
+
     err = pgv3.CreateUser(db, user)
     if err != nil {
         responseErrorInternal(w)
@@ -138,6 +142,8 @@ func RetrieveRelationship(w http.ResponseWriter, r *http.Request) {
         return
     }
     db := pgv3.ConnectDatabase()
+    defer db.Close()
+
     rels, err := pgv3.GetUserRelationships(db, id)
     if err != nil {
         responseErrorInternal(w)
@@ -184,6 +190,10 @@ func UpdateRelationship(w http.ResponseWriter, r *http.Request) {
         responseErrorUnprocessableEntity(w)
         return
     }
+    if data.State != "liked" && data.State != "disliked" {
+        responseErrorUnprocessableEntity(w)
+        return
+    }
     rel := &pgv3.Relationship{
         Id: id,
         OtherId: otherId,
@@ -193,6 +203,8 @@ func UpdateRelationship(w http.ResponseWriter, r *http.Request) {
     //fmt.Println("Posted relainship state: ", id, otherId, data.State)
 
     db := pgv3.ConnectDatabase()
+    defer db.Close()
+
     err = pgv3.UpdateUserRelationship(db, rel)
     if err != nil {
         responseErrorInternal(w)
