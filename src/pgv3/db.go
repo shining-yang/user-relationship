@@ -31,10 +31,18 @@ func GetUsers(db *pg.DB) ([]User, error) {
 }
 
 func UpdateUserRelationship(db *pg.DB, rel *Relationship) error {
-    _, err := db.QueryOne(rel,
+    tx, err := db.Begin()
+	if err != nil {
+        return err
+    }
+    _, err = db.QueryOne(rel,
         `SELECT * FROM insert_or_update_relationship(?id, ?other_id, ?state)`,
         rel)
-    return err
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
+    return tx.Commit()
 }
 
 func GetUserRelationships(db *pg.DB, id int64) ([]Relationship, error) {
